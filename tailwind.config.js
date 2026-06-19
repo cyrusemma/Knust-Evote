@@ -3,11 +3,15 @@ export default {
   theme: {
     extend: {
       colors: {
-        navy:    { DEFAULT: '#1A3A6B', dark: '#112850', light: '#E8EDF5' },
-        gold:    { DEFAULT: '#B8860B', light: '#FDF6E3' },
-        surface: '#FFFFFF',
-        bg:      '#F4F6FA',
-        border:  '#DDE2ED',
+        navy:    { DEFAULT: 'var(--color-navy)', dark: 'var(--color-navy-dark)', light: 'var(--color-navy-light)' },
+        gold:    { DEFAULT: 'var(--color-gold)', light: 'var(--color-gold-light)' },
+        surface: 'var(--color-surface)',
+        bg:      'var(--color-bg)',
+        border:  'var(--color-border)',
+        success: 'var(--color-success)',
+        danger:  'var(--color-danger)',
+        warning: 'var(--color-warning)',
+        muted:   'var(--color-muted)',
       },
       fontFamily: {
         display: ['"IBM Plex Sans"', 'sans-serif'],

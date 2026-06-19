@@ -43,9 +43,19 @@
     --color-border: #DDE2ED;
     --color-text: #111827;
     --color-muted: #6B7280;
-    
-    background-color: var(--color-bg);
-    color: var(--color-text);
+  }
+
+  .dark {
+    --color-navy: #60A5FA;
+    --color-navy-dark: #3B82F6;
+    --color-navy-light: #1E293B;
+    --color-gold: #FBBF24;
+    --color-gold-light: #332D1A;
+    --color-surface: #1E293B; /* Slate 800 */
+    --color-bg: #0F172A; /* Slate 900 */
+    --color-border: #334155; /* Slate 700 */
+    --color-text: #F8FAFC;
+    --color-muted: #94A3B8;
   }
 }
 
