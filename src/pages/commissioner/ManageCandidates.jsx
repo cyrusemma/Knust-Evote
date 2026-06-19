@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Shield, Plus, Trash2, Edit2, Check, X, AlertCircle, ArrowLeft } from 'lucide-react';
+import { Shield, Plus, Trash2, Edit2, Check, X, AlertCircle, ArrowLeft, ToggleLeft, ToggleRight } from 'lucide-react';
 import { getElection, getAllCandidates, addCandidate, updateCandidate, deleteCandidate } from '../../lib/mockData';
 import { toast } from 'react-hot-toast';
 
@@ -12,6 +12,7 @@ function CandidateForm({ electionId, onSave, onCancel, initial = null }) {
     position_title: initial?.position_title || '',
     manifesto: initial?.manifesto || '',
     photo_url: initial?.photo_url || '',
+    is_unopposed: initial?.is_unopposed || false,
   });
   const [preview, setPreview] = useState(initial?.photo_url || '');
 
@@ -42,7 +43,7 @@ function CandidateForm({ electionId, onSave, onCancel, initial = null }) {
 
       {/* Photo upload */}
       <div className="flex items-center space-x-4">
-        <div className="w-20 h-20 flex-shrink-0 bg-navy-light border-2 border-dashed border-border overflow-hidden flex items-center justify-center">
+        <div className="w-20 h-20 flex-shrink-0 bg-surface border-2 border-dashed border-border overflow-hidden flex items-center justify-center">
           {preview
             ? <img src={preview} alt="preview" className="w-full h-full object-cover" />
             : <span className="text-3xl text-muted font-bold">{form.full_name?.[0] || '?'}</span>
@@ -76,6 +77,28 @@ function CandidateForm({ electionId, onSave, onCancel, initial = null }) {
           placeholder="Brief manifesto or campaign message..."
         />
       </div>
+
+      {/* Unopposed toggle */}
+      <div
+        className={`border-2 p-4 cursor-pointer transition-all flex items-start justify-between gap-4 ${form.is_unopposed ? 'border-gold bg-gold/5' : 'border-border bg-surface'}`}
+        onClick={() => setForm(f => ({ ...f, is_unopposed: !f.is_unopposed }))}
+      >
+        <div>
+          <p className="font-display font-bold text-navy text-sm">Running Unopposed</p>
+          <p className="text-xs text-muted mt-0.5">Voters will cast a YES or NO confidence vote instead of selecting a candidate.</p>
+        </div>
+        <div className="flex-shrink-0 mt-0.5">
+          {form.is_unopposed
+            ? <ToggleRight className="w-8 h-8 text-gold" />
+            : <ToggleLeft className="w-8 h-8 text-muted" />
+          }
+        </div>
+      </div>
+      {form.is_unopposed && (
+        <div className="text-xs bg-gold/10 border border-gold/30 text-gold p-3 font-medium">
+          ⚠️ When set as Unopposed, this election will display a YES / NO ballot to voters. Results will show confidence percentages.
+        </div>
+      )}
 
       <div className="flex space-x-3">
         <button type="submit" className="bg-navy text-surface font-display font-medium px-6 py-2 hover:bg-navy-dark transition-colors flex items-center">
@@ -124,11 +147,16 @@ export default function ManageCandidates() {
     toast.success('Candidate removed');
   };
 
+  const handleToggleUnopposed = (c) => {
+    updateCandidate(c.id, { is_unopposed: !c.is_unopposed });
+    reload();
+    toast.success(`${c.full_name} marked as ${!c.is_unopposed ? 'Unopposed (YES/NO vote)' : 'Regular candidate'}`);
+  };
+
   if (!election) return <div className="min-h-screen bg-bg flex items-center justify-center">Loading...</div>;
 
   return (
     <div className="min-h-screen bg-bg font-body flex flex-col">
-      {/* Header */}
       <header className="bg-navy py-4 px-8 flex justify-between items-center">
         <div className="flex items-center space-x-2">
           <Shield className="w-6 h-6 text-surface" />
@@ -157,7 +185,7 @@ export default function ManageCandidates() {
         {election.status === 'open' && (
           <div className="bg-warning/10 border border-warning/50 text-warning text-sm p-3 mb-6 flex items-center">
             <AlertCircle className="w-4 h-4 mr-2 flex-shrink-0" />
-            This election is live. Adding or editing candidates now will immediately affect voters.
+            This election is live. Adding or editing candidates will immediately affect voters.
           </div>
         )}
 
@@ -171,7 +199,7 @@ export default function ManageCandidates() {
         {/* Candidate list */}
         {candidates.length === 0 ? (
           <div className="bg-surface border border-border p-16 text-center">
-            <Users className="w-12 h-12 text-muted mx-auto mb-3" />
+            <UsersIcon className="w-12 h-12 text-muted mx-auto mb-3" />
             <h3 className="font-display font-bold text-navy text-lg mb-1">No candidates yet</h3>
             <p className="text-muted text-sm">Click "Add Candidate" to start building the ballot.</p>
           </div>
@@ -181,7 +209,7 @@ export default function ManageCandidates() {
               editingId === c.id ? (
                 <CandidateForm key={c.id} electionId={electionId} initial={c} onSave={handleEdit} onCancel={() => setEditingId(null)} />
               ) : (
-                <div key={c.id} className="bg-surface border border-border p-5 flex items-start gap-4">
+                <div key={c.id} className={`bg-surface border-2 p-5 flex items-start gap-4 transition-all ${c.is_unopposed ? 'border-gold' : 'border-border'}`}>
                   {/* Rank */}
                   <div className="w-7 h-7 flex-shrink-0 bg-navy-light text-navy text-xs font-bold flex items-center justify-center mt-1">
                     #{idx + 1}
@@ -197,14 +225,32 @@ export default function ManageCandidates() {
 
                   {/* Info */}
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-display font-bold text-lg text-navy">{c.full_name}</h3>
+                    <div className="flex items-center gap-2 flex-wrap mb-0.5">
+                      <h3 className="font-display font-bold text-lg text-navy">{c.full_name}</h3>
+                      {c.is_unopposed && (
+                        <span className="text-xs bg-gold/20 text-gold px-2 py-0.5 font-bold uppercase tracking-wide">Unopposed (YES/NO)</span>
+                      )}
+                    </div>
                     <p className="text-xs font-bold text-gold uppercase tracking-wider mb-1">{c.position_title}</p>
                     {c.manifesto && <p className="text-sm text-muted line-clamp-2">{c.manifesto}</p>}
-                    <p className="text-xs text-muted mt-2 font-mono">{c.vote_count} votes</p>
+                    <p className="text-xs text-muted mt-2 font-mono">
+                      {c.is_unopposed
+                        ? `${c.yes_votes || 0} YES · ${c.no_votes || 0} NO`
+                        : `${c.vote_count} votes`
+                      }
+                    </p>
                   </div>
 
                   {/* Actions */}
-                  <div className="flex space-x-2 flex-shrink-0">
+                  <div className="flex flex-col space-y-2 flex-shrink-0">
+                    <button
+                      onClick={() => handleToggleUnopposed(c)}
+                      title={c.is_unopposed ? 'Switch to regular vote' : 'Mark as Unopposed'}
+                      className={`p-2 border text-xs font-bold transition-colors flex items-center gap-1 ${c.is_unopposed ? 'border-gold text-gold hover:bg-gold/10' : 'border-border text-muted hover:bg-navy-light'}`}
+                    >
+                      {c.is_unopposed ? <ToggleRight className="w-4 h-4" /> : <ToggleLeft className="w-4 h-4" />}
+                      {c.is_unopposed ? 'Unopposed' : 'Opposed'}
+                    </button>
                     <button onClick={() => setEditingId(c.id)} className="p-2 border border-border text-navy hover:bg-navy-light transition-colors">
                       <Edit2 className="w-4 h-4" />
                     </button>
@@ -222,7 +268,7 @@ export default function ManageCandidates() {
   );
 }
 
-function Users({ className }) {
+function UsersIcon({ className }) {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
       <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
