@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
+import './App.css'
 import { AuthProvider } from './context/AuthContext'
 import { ThemeProvider } from './context/ThemeContext'
 import ProtectedRoute from './components/auth/ProtectedRoute'
@@ -62,12 +63,29 @@ function App() {
       <ThemeProvider>
         <AuthProvider>
           <AnimatedRoutes />
-          <Toaster position="top-right" />
-          
-          {/* Floating Theme Toggle for the Demo */}
-          <div className="fixed bottom-4 right-4 z-50 bg-surface border border-border shadow-lg p-1 rounded-full">
-            <ThemeToggle />
-          </div>
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              style: {
+                borderRadius: '0px',
+                background: 'var(--color-surface)',
+                color: 'var(--color-text)',
+                border: '1px solid var(--color-border)',
+                fontFamily: '"IBM Plex Sans", sans-serif',
+                fontSize: '14px',
+                padding: '12px 16px',
+                boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
+              },
+              success: {
+                iconTheme: { primary: '#16A34A', secondary: 'white' },
+              },
+              error: {
+                iconTheme: { primary: '#DC2626', secondary: 'white' },
+              },
+            }}
+          />
+          {/* ThemeToggle self-positions as fixed */}
+          <ThemeToggle />
         </AuthProvider>
       </ThemeProvider>
     </BrowserRouter>
