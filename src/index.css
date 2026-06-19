@@ -1,0 +1,61 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+@import "tailwindcss";
+
+@theme {
+  --color-navy: #1A3A6B;
+  --color-navy-dark: #112850;
+  --color-navy-light: #E8EDF5;
+  --color-gold: #B8860B;
+  --color-gold-light: #FDF6E3;
+  --color-surface: #FFFFFF;
+  --color-bg: #F4F6FA;
+  --color-border: #DDE2ED;
+  --color-success: #16A34A;
+  --color-danger: #DC2626;
+  --color-warning: #D97706;
+  --color-text: #111827;
+  --color-muted: #6B7280;
+
+  --font-display: "IBM Plex Sans", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+  
+  --radius-DEFAULT: 0px;
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
+  --radius-full: 9999px;
+}
+
+@layer base {
+  :root {
+    --color-navy: #1A3A6B;
+    --color-navy-dark: #112850;
+    --color-navy-light: #E8EDF5;
+    --color-gold: #B8860B;
+    --color-gold-light: #FDF6E3;
+    --color-success: #16A34A;
+    --color-danger: #DC2626;
+    --color-warning: #D97706;
+    --color-surface: #FFFFFF;
+    --color-bg: #F4F6FA;
+    --color-border: #DDE2ED;
+    --color-text: #111827;
+    --color-muted: #6B7280;
+    
+    background-color: var(--color-bg);
+    color: var(--color-text);
+  }
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+}
